@@ -1,0 +1,29 @@
+{
+  "name": "larva/laravel-attachment",
+  "description": "Attachment Extension for Laravel.",
+  "keywords": [ "laravel", "attachment", "larva" ],
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "illuminate/support": "^6.0 || ^7.0 || ^8.0",
+    "illuminate/database": "^6.0 || ^7.0 || ^8.0",
+    "illuminate/http": "^6.0 || ^7.0 || ^8.0",
+    "illuminate/filesystem": "^6.0 || ^7.0 || ^8.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Larva\\Attachment\\": "src"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    },
+    "laravel": {
+      "providers": [
+        "Larva\\Attachment\\AttachmentServiceProvider"
+      ]
+    }
+  },
+  "prefer-stable": true
+}
