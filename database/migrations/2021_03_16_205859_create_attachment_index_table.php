@@ -24,6 +24,7 @@ class CreateAttachmentIndexTable extends Migration
             $table->string('md5', 32);
             $table->string('sha1', 40);
             $table->boolean('status');
+            $table->morphs('attachable');
             $table->ipAddress('created_ip')->nullable();
             $table->unsignedInteger('created_port')->nullable();
             $table->timestamp('created_at')->nullable();

@@ -32,6 +32,8 @@ use Larva\Attachment\Upload;
  * @property Carbon $updated_at 更新时间
  * @property-read string $url 附件访问地址
  *
+ * @method static \Illuminate\Database\Eloquent\Builder|AttachmentIndex byMd5($md5)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttachmentIndex bySha1($sha1)
  * @author Tongle Xu <xutongle@gmail.com>
  */
 class AttachmentIndex extends Model
@@ -113,6 +115,37 @@ class AttachmentIndex extends Model
     protected function serializeDate(\DateTimeInterface $date)
     {
         return $date->format($this->dateFormat ?: 'Y-m-d H:i:s');
+    }
+
+    /**
+     * 多态关联
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function attachable()
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * 查询指定MD5的文件
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $md5
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeByMd5($query, $md5)
+    {
+        return $query->where('md5', $md5);
+    }
+
+    /**
+     * 查询指定用户的文章
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $sha1
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeBySha1($query, $sha1)
+    {
+        return $query->where('sha1', $sha1);
     }
 
     /**

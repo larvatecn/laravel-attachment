@@ -10,6 +10,7 @@ namespace Larva\Attachment\Observers;
 
 use Illuminate\Support\Facades\Request;
 use Larva\Attachment\Models\AttachmentIndex;
+use Larva\Attachment\Upload;
 
 /**
  * 附件模型观察者
@@ -18,7 +19,10 @@ use Larva\Attachment\Models\AttachmentIndex;
 class AttachmentIndexObserver
 {
     /**
+     * 处理「creating」事件
+     *
      * @param AttachmentIndex $model
+     * @return void
      */
     public function creating(AttachmentIndex $model)
     {
@@ -30,11 +34,31 @@ class AttachmentIndexObserver
     }
 
     /**
+     * 处理「updating」事件
+     *
      * @param AttachmentIndex $model
+     * @return void
      */
     public function updating(AttachmentIndex $model)
     {
         $model->update_ip = Request::ip();
         $model->update_port = Request::server('REMOTE_PORT');
+    }
+
+    /**
+     * 处理「deleted」事件
+     *
+     * @param AttachmentIndex $model
+     * @return void
+     */
+    public function deleted(AttachmentIndex $model)
+    {
+        //如果没有同 hash 文件就删除实体文件
+        if (!AttachmentIndex::bySha1($model->sha1)->exists()) {
+            if (($upload = Upload::driver($model->driver)) === false) {
+                return;
+            }
+            $upload->destroy($model->path);
+        }
     }
 }
