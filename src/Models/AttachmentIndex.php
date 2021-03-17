@@ -31,6 +31,7 @@ use Larva\Attachment\Upload;
  * @property Carbon $created_at 创建时间
  * @property Carbon $updated_at 更新时间
  * @property-read string $url 附件访问地址
+ * @property-read string $sizeFormat 格式化后的文件大小
  *
  * @method static \Illuminate\Database\Eloquent\Builder|AttachmentIndex byMd5($md5)
  * @method static \Illuminate\Database\Eloquent\Builder|AttachmentIndex bySha1($sha1)
@@ -149,6 +150,20 @@ class AttachmentIndex extends Model
     }
 
     /**
+     * 获取格式化后的文件大小
+     * @return string
+     */
+    public function getSizeFormatAttribute()
+    {
+        $sizes = [" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];
+        if ($this->attributes['size'] == 0) {
+            return 'n/a';
+        } else {
+            return round($this->attributes['size'] / pow(1024, ($i = floor(log($this->attributes['size'], 1024)))), 2) . $sizes[$i];
+        }
+    }
+
+    /**
      * 获取访问地址
      * @return string
      */
@@ -160,6 +175,6 @@ class AttachmentIndex extends Model
         if (($upload = Upload::driver($this->driver)) === false) {
             return '';
         }
-        return $upload->objectUrl($this->path);
+        return $upload->url($this->path);
     }
 }
