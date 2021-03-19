@@ -12,11 +12,11 @@ use Illuminate\Database\Eloquent\Model;
 use Larva\Attachment\Models\AttachmentIndex;
 
 /**
- * Trait AttachableTrait
+ * Trait HasAttachment
  * @mixin Model
  * @author Tongle Xu <xutongle@gmail.com>
  */
-trait AttachableTrait
+trait HasAttachment
 {
     /**
      * Attachment Relation

@@ -9,6 +9,10 @@ declare (strict_types=1);
 
 namespace Larva\Attachment;
 
+use Illuminate\Support\Facades\File;
+use Larva\Support\HtmlHelper;
+use Larva\Support\HttpClient;
+use Larva\Support\StringHelper;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use Illuminate\Support\Arr;
@@ -179,6 +183,76 @@ class Upload
     }
 
     /**
+     * Get directory for store file.
+     *
+     * @return mixed|string
+     */
+    public function getDirectory()
+    {
+        if ($this->directory instanceof \Closure) {
+            return call_user_func($this->directory);
+        }
+        return $this->directory ?: $this->defaultDirectory();
+    }
+
+    /**
+     * Get file visit url.
+     *
+     * @param string $path
+     * @return string
+     */
+    public function url(string $path)
+    {
+        if (URL::isValidUrl($path)) {
+            return $path;
+        }
+        if ($this->storage) {
+            return $this->storage->url($path);
+        }
+        return Storage::disk(config('upload.disk'))->url($path);
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    public function temporaryUrl($path)
+    {
+        if (URL::isValidUrl($path)) {
+            return $path;
+        }
+        if ($this->storage) {
+            return $this->storage->temporaryUrl($path);
+        }
+        return Storage::disk(config('upload.disk'))->temporaryUrl($path);
+    }
+
+    /**
+     * Destroy original files.
+     *
+     * @param string $path
+     * @return void.
+     */
+    public function destroy(string $path)
+    {
+        if ($this->storage->exists($path)) {
+            $this->storage->delete($path);
+        }
+    }
+
+    /**
+     * Set file permission when stored into storage.
+     *
+     * @param string $permission
+     * @return $this
+     */
+    public function storagePermission(string $permission)
+    {
+        $this->storagePermission = $permission;
+        return $this;
+    }
+
+    /**
      * Get store name of upload file.
      *
      * @param UploadedFile $file
@@ -203,19 +277,6 @@ class Upload
         }
 
         return $this->generateClientName($file);
-    }
-
-    /**
-     * Get directory for store file.
-     *
-     * @return mixed|string
-     */
-    public function getDirectory()
-    {
-        if ($this->directory instanceof \Closure) {
-            return call_user_func($this->directory);
-        }
-        return $this->directory ?: $this->defaultDirectory();
     }
 
     /**
@@ -287,23 +348,6 @@ class Upload
     }
 
     /**
-     * Get file visit url.
-     *
-     * @param string $path
-     * @return string
-     */
-    public function objectUrl(string $path)
-    {
-        if (URL::isValidUrl($path)) {
-            return $path;
-        }
-        if ($this->storage) {
-            return $this->storage->url($path);
-        }
-        return Storage::disk(config('upload.disk'))->url($path);
-    }
-
-    /**
      * Generate a unique name for uploaded file.
      *
      * @param UploadedFile $file
@@ -353,30 +397,5 @@ class Upload
     public function generateClientName(UploadedFile $file): string
     {
         return $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
-    }
-
-    /**
-     * Destroy original files.
-     *
-     * @param string $path
-     * @return void.
-     */
-    public function destroy(string $path)
-    {
-        if ($this->storage->exists($path)) {
-            $this->storage->delete($path);
-        }
-    }
-
-    /**
-     * Set file permission when stored into storage.
-     *
-     * @param string $permission
-     * @return $this
-     */
-    public function storagePermission(string $permission)
-    {
-        $this->storagePermission = $permission;
-        return $this;
     }
 }
