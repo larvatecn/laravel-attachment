@@ -21,13 +21,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class Upload
 {
     /**
-     * Upload directory.
-     *
-     * @var string
-     */
-    protected $directory = '';
-
-    /**
      * Storage instance.
      *
      * @var Filesystem
@@ -82,30 +75,6 @@ class Upload
     }
 
     /**
-     * 默认文件存储目录
-     *
-     * @return mixed
-     */
-    public function defaultDirectory()
-    {
-        return config('upload.directory.file');
-    }
-
-    /**
-     * 设置上传文件目录
-     *
-     * @param string $dir
-     * @return $this
-     */
-    public function dir(string $dir)
-    {
-        if ($dir) {
-            $this->directory = $dir;
-        }
-        return $this;
-    }
-
-    /**
      * Get file visit url.
      *
      * @param string $path
@@ -120,19 +89,6 @@ class Upload
             return $this->storage->url($path);
         }
         return Storage::disk(config('upload.disk'))->url($path);
-    }
-
-    /**
-     * 获取文件存储目录
-     *
-     * @return mixed|string
-     */
-    public function getDirectory()
-    {
-        if ($this->directory instanceof \Closure) {
-            return call_user_func($this->directory);
-        }
-        return $this->directory ?: $this->defaultDirectory();
     }
 
     /**
