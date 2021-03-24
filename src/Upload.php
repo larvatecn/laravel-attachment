@@ -12,7 +12,6 @@ namespace Larva\Attachment;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * 上传处理
@@ -34,7 +33,7 @@ class Upload
      */
     public static function create()
     {
-        return static::driver(config('upload.disk'));
+        return static::driver(config('filesystems.cloud'));
     }
 
     /**
@@ -88,7 +87,7 @@ class Upload
         if ($this->storage) {
             return $this->storage->url($path);
         }
-        return Storage::disk(config('upload.disk'))->url($path);
+        return Storage::disk(config('filesystems.cloud'))->url($path);
     }
 
     /**
